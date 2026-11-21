@@ -10,6 +10,7 @@ import '../../../application/round_controller.dart';
 import '../../../application/settings_controller.dart';
 import '../../../application/trip_controller.dart';
 import '../../../domain/models/round_phase.dart';
+import '../../../services/announcer.dart';
 import '../../../services/secure_screen.dart';
 import '../../widgets/ink_button.dart';
 import '../../widgets/screen_scaffold.dart';
@@ -121,7 +122,10 @@ class _RoundHostScreenState extends ConsumerState<RoundHostScreen> {
       RoundPhase.questioning => RoundMasterScreen(
           view: view,
           muted: muted,
-          onToggleMute: () => ref.read(settingsControllerProvider.notifier).setMuted(!muted),
+          onToggleMute: () {
+            ref.read(settingsControllerProvider.notifier).setMuted(!muted);
+            if (!muted) ref.read(announcerProvider).stopAll();
+          },
           onIncrement: () {
             HapticFeedback.selectionClick();
             _guard(_c.increment);

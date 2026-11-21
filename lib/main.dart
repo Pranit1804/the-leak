@@ -5,7 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/app.dart';
 import 'app/router.dart';
 import 'application/providers.dart';
+import 'application/round_controller.dart';
 import 'data/db/app_database.dart';
+import 'services/announcer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +22,7 @@ Future<void> main() async {
     overrides: [
       databaseProvider.overrideWithValue(db),
       sharedPreferencesProvider.overrideWithValue(prefs),
+      roundEventsProvider.overrideWith(AnnouncerEvents.new),
     ],
     child: TheLeakApp(router: router),
   ));
