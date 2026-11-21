@@ -1,0 +1,5 @@
+[
+  { "id": "caught_001", "outcome": "caught", "text": "{insider}, seconds after the reveal. \"I was only asking questions.\"" },
+  { "id": "not_caught_001", "outcome": "not_caught", "text": "{insider}, moments after walking free. No comment." },
+  { "id": "not_found_001", "outcome": "not_found", "text": "{insider}, keeping a straight face as the questions ran out." }
+]

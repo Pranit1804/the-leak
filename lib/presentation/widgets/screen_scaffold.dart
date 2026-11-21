@@ -13,7 +13,7 @@ import 'stroke_icon.dart';
 class PaperScreen extends StatelessWidget {
   const PaperScreen({
     super.key,
-    required this.children,
+    required this.body,
     this.bottom = const [],
     this.gap = 16,
     this.background = AppColors.paper,
@@ -21,7 +21,7 @@ class PaperScreen extends StatelessWidget {
     this.padding = const EdgeInsets.fromLTRB(AppSpace.screenX, AppSpace.screenTop, AppSpace.screenX, AppSpace.screenBottom),
   });
 
-  final List<Widget> children;
+  final List<Widget> body;
   final List<Widget> bottom;
   final double gap;
   final Color background;
@@ -33,11 +33,11 @@ class PaperScreen extends StatelessWidget {
     final media = MediaQuery.of(context);
     final top = math.max(padding.top, media.viewPadding.top + 12);
     final bottomPad = padding.bottom + media.viewPadding.bottom;
-    Widget body = CustomScrollView(
+    Widget content = CustomScrollView(
       slivers: [
         SliverPadding(
           padding: EdgeInsets.fromLTRB(padding.left, top, padding.right, 0),
-          sliver: SliverList.list(children: _withGaps(children)),
+          sliver: SliverList.list(children: _withGaps(body)),
         ),
         SliverFillRemaining(
           hasScrollBody: false,
@@ -52,8 +52,8 @@ class PaperScreen extends StatelessWidget {
         ),
       ],
     );
-    if (decoration != null) body = DecoratedBox(decoration: decoration!, child: body);
-    return Scaffold(backgroundColor: background, body: body);
+    if (decoration != null) content = DecoratedBox(decoration: decoration!, child: content);
+    return Scaffold(backgroundColor: background, body: content);
   }
 
   List<Widget> _withGaps(List<Widget> items) => [
