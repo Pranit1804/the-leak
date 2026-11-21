@@ -13,6 +13,7 @@ class InkButton extends StatelessWidget {
     this.height = AppSpace.buttonPrimary,
     this.fontSize = 21,
     this.letterSpacingEm = 0.08,
+    this.trailingTriangle = false,
   });
 
   /// Red fill: Word guessed, Share image.
@@ -23,6 +24,7 @@ class InkButton extends StatelessWidget {
     this.height = AppSpace.buttonPrimary,
     this.fontSize = 21,
     this.letterSpacingEm = 0.08,
+    this.trailingTriangle = false,
   }) : color = AppColors.red;
 
   final String label;
@@ -32,9 +34,16 @@ class InkButton extends StatelessWidget {
   final double fontSize;
   final double letterSpacingEm;
 
+  /// A small "▸" after the label (Reveal: "CONTINUED IN ROUND 14 ▸"), drawn
+  /// because the display font has no such glyph.
+  final bool trailingTriangle;
+
   @override
   Widget build(BuildContext context) {
     final enabled = onPressed != null;
+    final textColor = enabled ? AppColors.onInk : AppColors.inkMuted;
+    final text = Text(label.toUpperCase(),
+        maxLines: 1, style: AppText.button(size: fontSize, letterSpacingEm: letterSpacingEm, color: textColor));
     return Semantics(
       button: true,
       enabled: enabled,
@@ -51,9 +60,13 @@ class InkButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(label.toUpperCase(),
-                maxLines: 1,
-                style: AppText.button(size: fontSize, letterSpacingEm: letterSpacingEm, color: enabled ? AppColors.onInk : AppColors.inkMuted)),
+            child: trailingTriangle
+                ? Row(mainAxisSize: MainAxisSize.min, children: [
+                    text,
+                    SizedBox(width: fontSize * 0.2),
+                    CustomPaint(size: Size.square(fontSize * 0.6), painter: _TrianglePainter(textColor)),
+                  ])
+                : text,
           ),
         ),
       ),
@@ -188,4 +201,26 @@ class IconSquareButton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _TrianglePainter extends CustomPainter {
+  _TrianglePainter(this.color);
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final h = size.height * 0.62;
+    final top = (size.height - h) / 2;
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width * 0.2, top)
+        ..lineTo(size.width * 0.75, top + h / 2)
+        ..lineTo(size.width * 0.2, top + h)
+        ..close(),
+      Paint()..color = color,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_TrianglePainter old) => old.color != color;
 }

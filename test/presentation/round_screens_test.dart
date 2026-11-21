@@ -222,7 +222,7 @@ void main() {
     expect(find.textContaining('exposed as the leak in a 4–2 vote'), findsOneWidget);
     expect(find.text('Priya (M) → Sneha'), findsOneWidget);
     expect(find.text('Sneha → Neha'), findsOneWidget);
-    expect(find.text('CONTINUED IN ROUND 14 ▸'), findsOneWidget);
+    expect(find.text('CONTINUED IN ROUND 14'), findsOneWidget);
     expect(find.text('HOW THE CAR VOTED'), findsOneWidget);
   });
 

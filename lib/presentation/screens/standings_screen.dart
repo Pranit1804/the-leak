@@ -103,15 +103,20 @@ class _StandingsScreenState extends ConsumerState<StandingsScreen> {
           children: [
             _TableHeader(cells: [line.title, line.award.title]),
             for (var i = 0; i < rows.length; i++)
-              _Row(
-                height: 44,
-                last: i == rows.length - 1,
-                highlight: s.award(line.award)?.winnerIds.contains(rows[i].player.id) ?? false,
-                cells: [
-                  _Cell(rows[i].player.name, flex: 1, style: AppText.ui(16, weight: 600)),
-                  _Cell(line.value(rows[i]), align: TextAlign.right, style: AppText.ui(16, weight: 700)),
-                ],
-              ),
+              () {
+                // The award holder's row is filled in ink, like the leader on Points.
+                final won = s.award(line.award)?.winnerIds.contains(rows[i].player.id) ?? false;
+                final c = won ? AppColors.onInk : AppColors.ink;
+                return _Row(
+                  height: 44,
+                  last: i == rows.length - 1,
+                  highlight: won,
+                  cells: [
+                    _Cell(rows[i].player.name, flex: 1, padLeft: won ? 8 : 0, style: AppText.ui(16, weight: won ? 700 : 600, color: c)),
+                    _Cell(line.value(rows[i]), align: TextAlign.right, padRight: won ? 8 : 0, style: AppText.ui(16, weight: 700, color: c)),
+                  ],
+                );
+              }(),
             const SizedBox(height: 4),
           ],
         ),

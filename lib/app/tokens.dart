@@ -77,6 +77,9 @@ abstract final class AppText {
         fontStyle: italic ? FontStyle.italic : FontStyle.normal,
         fontWeight: FontWeight.w400,
         fontVariations: const [FontVariation('wght', 400)],
+        // Libre Caslon's default ligatures turn "st" into a historical
+        // ligature; the mockups read as plain text.
+        fontFeatures: const [FontFeature.disable('liga')],
         color: color,
         height: height,
       );

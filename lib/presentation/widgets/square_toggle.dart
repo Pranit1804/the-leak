@@ -48,6 +48,7 @@ class ToggleRow extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.heavyTop = true,
+    this.topRule = true,
   });
 
   final String title;
@@ -56,13 +57,16 @@ class ToggleRow extends StatelessWidget {
   final ValueChanged<bool>? onChanged;
   final bool heavyTop;
 
+  /// False when the row sits directly under another row that already has a rule.
+  final bool topRule;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: AppColors.ink, width: heavyTop ? AppSpace.heavyRule : AppSpace.lightRule),
+          top: topRule ? BorderSide(color: AppColors.ink, width: heavyTop ? AppSpace.heavyRule : AppSpace.lightRule) : BorderSide.none,
           bottom: const BorderSide(color: AppColors.ink, width: AppSpace.lightRule),
         ),
       ),

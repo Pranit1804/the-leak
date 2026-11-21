@@ -58,22 +58,24 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: c.setDiscussionSeconds,
           ),
         ),
-        ToggleRow(
-          title: 'Spoken alerts',
-          subtitle: 'Ten, five and one questions left',
-          value: s.game.alertsOn,
-          onChanged: c.setAlertsOn,
-        ),
-        ToggleRow(
-          title: 'Announcements',
-          subtitle: 'Round start, vote and reveal, read aloud',
-          value: !s.muted,
-          heavyTop: false,
-          onChanged: (on) {
-            c.setMuted(!on);
-            if (!on) ref.read(announcerProvider).stopAll();
-          },
-        ),
+        Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          ToggleRow(
+            title: 'Spoken alerts',
+            subtitle: 'Ten, five and one questions left',
+            value: s.game.alertsOn,
+            onChanged: c.setAlertsOn,
+          ),
+          ToggleRow(
+            title: 'Announcements',
+            subtitle: 'Round start, vote and reveal, read aloud',
+            value: !s.muted,
+            topRule: false,
+            onChanged: (on) {
+              c.setMuted(!on);
+              if (!on) ref.read(announcerProvider).stopAll();
+            },
+          ),
+        ]),
         OutlineInkButton(
           label: 'Test voice',
           onPressed: () => ref.read(announcerProvider).say(AnnouncerLines.testVoice, force: true),

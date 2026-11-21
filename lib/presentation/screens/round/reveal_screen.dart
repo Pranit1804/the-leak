@@ -97,7 +97,7 @@ class RevealScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    InkButton(label: 'Continued in round ${r.number + 1} ▸', fontSize: 22, onPressed: onNextRound),
+                    InkButton(label: 'Continued in round ${r.number + 1}', fontSize: 22, trailingTriangle: true, onPressed: onNextRound),
                     const SizedBox(height: 10),
                     Row(children: [
                       Expanded(child: OutlineInkButton(label: 'Standings', height: 46, fontSize: 13, letterSpacingEm: 0.14, onPressed: onStandings)),
