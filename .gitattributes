@@ -1,0 +1,2 @@
+# The sealed deck never shows up in diffs, logs or patches.
+assets/decks/*.json -diff
