@@ -16,6 +16,8 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>The Leak</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save your Trip Wrapped front page to your photos.</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
