@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Leak — Who guessed</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Libre+Caslon+Text:ital@0;1&amp;family=Libre+Franklin:wght@500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1ECDF}
+a{color:#141210}a:hover{color:#C8201A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 44px 20px 24px; background: #F1ECDF; color: #141210; font-family: 'Libre Franklin', sans-serif; display: flex; flex-direction: column; gap: 16px">
+  <div style="display: flex; justify-content: space-between; padding-bottom: 8px; border-bottom: 1px solid #141210">
+    <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.16em">ROUND 13</span>
+    <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.16em; color: #C8201A">CRACKED IN 7 QUESTIONS</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <h1 style="margin: 0; font-family: Anton, sans-serif; font-size: 48px; line-height: 1; font-weight: 400">WHO SAID IT?</h1>
+    <p style="margin: 0; font-family: 'Libre Caslon Text', serif; font-style: italic; font-size: 17px">Tap the player who guessed the word.</p>
+  </div>
+
+  <div role="radiogroup" aria-label="Player who guessed the word" style="display: flex; flex-direction: column; border-top: 3px solid #141210">
+    <button role="radio" aria-checked="false" style="height: 60px; padding: 0 4px; border: none; border-bottom: 1px solid #C9C0AC; border-radius: 0; background: transparent; color: #141210; display: flex; align-items: center; justify-content: space-between; font-family: 'Libre Franklin', sans-serif; font-size: 18px; font-weight: 600; text-align: left"><span>Rohan</span><span style="font-size: 11px; font-weight: 800; letter-spacing: 0.16em; color: #4F493E">DRIVER</span></button>
+    <button role="radio" aria-checked="true" style="height: 60px; padding: 0 14px; border: none; border-radius: 0; background: #141210; color: #FFFFFF; display: flex; align-items: center; justify-content: space-between; font-family: 'Libre Franklin', sans-serif; font-size: 18px; font-weight: 700; text-align: left"><span>Amit</span><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="square"><path d="M5 12l5 5L20 7"></path></svg></button>
+    <button role="radio" aria-checked="false" style="height: 60px; padding: 0 4px; border: none; border-bottom: 1px solid #C9C0AC; border-radius: 0; background: transparent; color: #141210; display: flex; align-items: center; font-family: 'Libre Franklin', sans-serif; font-size: 18px; font-weight: 600; text-align: left">Sneha</button>
+    <button role="radio" aria-checked="false" style="height: 60px; padding: 0 4px; border: none; border-bottom: 1px solid #C9C0AC; border-radius: 0; background: transparent; color: #141210; display: flex; align-items: center; font-family: 'Libre Franklin', sans-serif; font-size: 18px; font-weight: 600; text-align: left">Kunal</button>
+    <button role="radio" aria-checked="false" style="height: 60px; padding: 0 4px; border: none; border-bottom: 1px solid #C9C0AC; border-radius: 0; background: transparent; color: #141210; display: flex; align-items: center; font-family: 'Libre Franklin', sans-serif; font-size: 18px; font-weight: 600; text-align: left">Neha</button>
+  </div>
+
+  <a href="#" style="margin-top: auto; height: 56px; background: #141210; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: Anton, sans-serif; font-size: 21px; letter-spacing: 0.08em; text-decoration: none">AMIT CRACKED IT</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

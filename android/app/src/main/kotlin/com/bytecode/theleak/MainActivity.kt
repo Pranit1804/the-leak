@@ -1,4 +1,4 @@
-package com.bytecode.the_leak
+package com.bytecode.theleak
 
 import io.flutter.embedding.android.FlutterActivity
 

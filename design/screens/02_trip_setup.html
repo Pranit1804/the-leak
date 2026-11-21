@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Leak — New trip</title>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Libre+Caslon+Text:ital@0;1&amp;family=Libre+Franklin:wght@500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F1ECDF}
+a{color:#141210}a:hover{color:#C8201A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; padding: 44px 20px 24px; background: #F1ECDF; color: #141210; font-family: 'Libre Franklin', sans-serif; display: flex; flex-direction: column; gap: 16px">
+  <div style="display: flex; align-items: center; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid #141210">
+    <button aria-label="Back" style="width: 44px; height: 44px; border: 2px solid #141210; border-radius: 0; background: transparent; color: #141210; display: flex; align-items: center; justify-content: center; padding: 0">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"><path d="M15 5l-7 7 7 7"></path></svg>
+    </button>
+    <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.16em">THE LEAK</span>
+  </div>
+
+  <h1 style="margin: 0; font-family: Anton, sans-serif; font-size: 48px; line-height: 1; font-weight: 400">NEW TRIP</h1>
+
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <label for="trip-name" style="font-size: 11px; font-weight: 800; letter-spacing: 0.16em">TRIP NAME</label>
+    <input id="trip-name" value="South Trip" style="height: 50px; border: 2px solid #141210; border-radius: 0; background: #FBF8F0; color: #141210; padding: 0 14px; font-family: 'Libre Franklin', sans-serif; font-size: 17px; font-weight: 600">
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 6px; border-bottom: 3px solid #141210">
+    <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.16em">PLAYERS (6) · IN SEAT ORDER</span>
+    <span style="font-size: 11px; font-weight: 800; letter-spacing: 0.16em">DRIVES</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; margin-top: -10px">
+    <div style="height: 50px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #C9C0AC">
+      <span style="width: 20px; font-family: Anton, sans-serif; font-size: 18px; color: #8A8270">1</span>
+      <span style="flex-grow: 1; font-size: 17px; font-weight: 600">Rohan</span>
+      <input type="checkbox" checked aria-label="Rohan can drive" style="width: 22px; height: 22px; margin: 0; accent-color: #141210">
+    </div>
+    <div style="height: 50px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #C9C0AC">
+      <span style="width: 20px; font-family: Anton, sans-serif; font-size: 18px; color: #8A8270">2</span>
+      <span style="flex-grow: 1; font-size: 17px; font-weight: 600">Priya</span>
+      <input type="checkbox" aria-label="Priya can drive" style="width: 22px; height: 22px; margin: 0; accent-color: #141210">
+    </div>
+    <div style="height: 50px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #C9C0AC">
+      <span style="width: 20px; font-family: Anton, sans-serif; font-size: 18px; color: #8A8270">3</span>
+      <span style="flex-grow: 1; font-size: 17px; font-weight: 600">Amit</span>
+      <input type="checkbox" checked aria-label="Amit can drive" style="width: 22px; height: 22px; margin: 0; accent-color: #141210">
+    </div>
+    <div style="height: 50px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #C9C0AC">
+      <span style="width: 20px; font-family: Anton, sans-serif; font-size: 18px; color: #8A8270">4</span>
+      <span style="flex-grow: 1; font-size: 17px; font-weight: 600">Sneha</span>
+      <input type="checkbox" aria-label="Sneha can drive" style="width: 22px; height: 22px; margin: 0; accent-color: #141210">
+    </div>
+    <div style="height: 50px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #C9C0AC">
+      <span style="width: 20px; font-family: Anton, sans-serif; font-size: 18px; color: #8A8270">5</span>
+      <span style="flex-grow: 1; font-size: 17px; font-weight: 600">Kunal</span>
+      <input type="checkbox" aria-label="Kunal can drive" style="width: 22px; height: 22px; margin: 0; accent-color: #141210">
+    </div>
+    <div style="height: 50px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #C9C0AC">
+      <span style="width: 20px; font-family: Anton, sans-serif; font-size: 18px; color: #8A8270">6</span>
+      <span style="flex-grow: 1; font-size: 17px; font-weight: 600">Neha</span>
+      <input type="checkbox" aria-label="Neha can drive" style="width: 22px; height: 22px; margin: 0; accent-color: #141210">
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 8px">
+    <label for="add-player" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Add player</label>
+    <input id="add-player" placeholder="Add a player" style="flex-grow: 1; min-width: 0; height: 50px; border: 2px dashed #8A8270; border-radius: 0; background: transparent; color: #141210; padding: 0 14px; font-family: 'Libre Franklin', sans-serif; font-size: 16px">
+    <button style="width: 76px; height: 50px; border: 2px solid #141210; border-radius: 0; background: transparent; color: #141210; font-family: 'Libre Franklin', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.12em">ADD</button>
+  </div>
+
+  <span style="font-size: 13px; color: #4F493E">Hold and drag a name to change the seat order.</span>
+
+  <a href="#" style="margin-top: auto; height: 56px; background: #141210; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: Anton, sans-serif; font-size: 21px; letter-spacing: 0.08em; text-decoration: none">SAVE AND CONTINUE</a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

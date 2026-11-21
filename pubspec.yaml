@@ -1,5 +1,5 @@
 name: the_leak
-description: "A new Flutter project."
+description: "The Leak: an offline single-phone social deduction party game with Car mode."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -17,3 +17,16 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Anton
+      fonts:
+        - asset: assets/fonts/Anton-Regular.ttf
+    - family: LibreFranklin
+      fonts:
+        - asset: assets/fonts/LibreFranklin-VariableFont_wght.ttf
+    - family: LibreCaslonText
+      fonts:
+        - asset: assets/fonts/LibreCaslonText-VariableFont_wght.ttf
+        - asset: assets/fonts/LibreCaslonText-Italic-VariableFont_wght.ttf
+          style: italic
