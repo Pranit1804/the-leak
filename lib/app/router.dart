@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../presentation/screens/home_screen.dart';
+import '../presentation/screens/licences_screen.dart';
 import '../presentation/screens/round/round_host_screen.dart';
 import '../presentation/screens/round_setup_screen.dart';
+import '../presentation/screens/settings_screen.dart';
 import '../presentation/screens/standings_screen.dart';
 import '../presentation/screens/trip_setup_screen.dart';
 import '../presentation/screens/wrapped_screen.dart';
-import '../presentation/widgets/screen_scaffold.dart';
 
 /// Routes from docs/TECH_SPEC.md section 7, plus edit, settings and licences.
 abstract final class Routes {
@@ -34,15 +34,8 @@ GoRouter buildRouter({String initialLocation = Routes.home}) => GoRouter(
         GoRoute(path: '/round/:roundId', builder: (c, s) => RoundHostScreen(roundId: _id(s, 'roundId'))),
         GoRoute(path: '/trip/:tripId/standings', builder: (c, s) => StandingsScreen(tripId: _id(s, 'tripId'))),
         GoRoute(path: '/trip/:tripId/wrapped', builder: (c, s) => WrappedScreen(tripId: _id(s, 'tripId'))),
-        GoRoute(path: Routes.settings, builder: (c, s) => const _Placeholder('SETTINGS')),
-        GoRoute(path: Routes.licences, builder: (c, s) => const _Placeholder('LICENCES')),
+        GoRoute(path: Routes.settings, builder: (c, s) => const SettingsScreen()),
+        GoRoute(path: Routes.licences, builder: (c, s) => const LicencesScreen()),
       ],
     );
 
-class _Placeholder extends StatelessWidget {
-  const _Placeholder(this.title);
-  final String title;
-
-  @override
-  Widget build(BuildContext context) => PaperScreen(body: [Headline(title)]);
-}

@@ -7,10 +7,12 @@ import 'app/router.dart';
 import 'application/providers.dart';
 import 'application/round_controller.dart';
 import 'data/db/app_database.dart';
+import 'presentation/screens/licences_screen.dart';
 import 'services/announcer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  registerFontLicences();
   final db = AppDatabase();
   final prefs = await SharedPreferences.getInstance();
 
