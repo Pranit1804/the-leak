@@ -10,6 +10,7 @@ import '../../../application/round_controller.dart';
 import '../../../application/settings_controller.dart';
 import '../../../application/trip_controller.dart';
 import '../../../domain/models/round_phase.dart';
+import '../../../services/secure_screen.dart';
 import '../../widgets/ink_button.dart';
 import '../../widgets/screen_scaffold.dart';
 import '../../widgets/square_dialog.dart';
@@ -168,7 +169,14 @@ class _RoundHostScreenState extends ConsumerState<RoundHostScreen> {
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _back(r.phase);
       },
-      child: KeyedSubtree(key: ValueKey('phase-${r.phase.name}'), child: screen),
+      child: KeyedSubtree(
+        key: ValueKey('phase-${r.phase.name}'),
+        // Role, peek and vote screens can show secrets: block screenshots and previews.
+        child: switch (r.phase) {
+          RoundPhase.handout || RoundPhase.questioning || RoundPhase.voting => SecureArea(child: screen),
+          _ => screen,
+        },
+      ),
     );
   }
 }
