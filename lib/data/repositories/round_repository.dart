@@ -107,8 +107,11 @@ class RoundRepository {
       });
 
   /// Saves the reveal: outcome, points, caption and the round state together.
-  Future<void> saveReveal(Round next, Map<int, int> points, {Set<String> clearUsedCaptionIds = const {}}) =>
+  Future<void> saveReveal(Round next, Map<int, int> points, {Vote? lastVote, Set<String> clearUsedCaptionIds = const {}}) =>
       _db.transaction(() async {
+        if (lastVote != null) {
+          await _db.roundDao.insertVote(VotesCompanion.insert(roundId: next.id, voterId: lastVote.voterId, targetId: lastVote.targetId));
+        }
         for (final e in points.entries) {
           await _db.roundDao.setScore(next.id, e.key, e.value);
         }

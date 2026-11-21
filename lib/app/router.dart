@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../presentation/screens/home_screen.dart';
+import '../presentation/screens/round/round_host_screen.dart';
 import '../presentation/screens/round_setup_screen.dart';
 import '../presentation/screens/trip_setup_screen.dart';
 import '../presentation/widgets/screen_scaffold.dart';
@@ -28,7 +29,7 @@ GoRouter buildRouter({String initialLocation = Routes.home}) => GoRouter(
         GoRoute(path: Routes.newTrip, builder: (c, s) => const TripSetupScreen()),
         GoRoute(path: '/trip/:tripId/edit', builder: (c, s) => TripSetupScreen(tripId: _id(s, 'tripId'))),
         GoRoute(path: '/trip/:tripId/round/new', builder: (c, s) => RoundSetupScreen(tripId: _id(s, 'tripId'))),
-        GoRoute(path: '/round/:roundId', builder: (c, s) => _Placeholder('ROUND ${_id(s, 'roundId')}')),
+        GoRoute(path: '/round/:roundId', builder: (c, s) => RoundHostScreen(roundId: _id(s, 'roundId'))),
         GoRoute(path: '/trip/:tripId/standings', builder: (c, s) => _Placeholder('STANDINGS ${_id(s, 'tripId')}')),
         GoRoute(path: '/trip/:tripId/wrapped', builder: (c, s) => _Placeholder('WRAPPED ${_id(s, 'tripId')}')),
         GoRoute(path: Routes.settings, builder: (c, s) => const _Placeholder('SETTINGS')),
