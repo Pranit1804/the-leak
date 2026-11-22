@@ -58,7 +58,7 @@ Headlines and buttons are always uppercase. Body and voice text are sentence cas
 | **Text button** | Franklin 13/800 uppercase, underline offset 4 px (Undo) |
 | **Icon button** | 44 × 44, 2 px `ink` border, square, 20 px stroke icon |
 | **List row** | 50–64 px, 1 px `ruleLight` bottom border, name in body 17–20 |
-| **Selected row** | `ink` fill with white text and a check; vote pick uses `red` fill with "YOUR PICK" label |
+| **Selected row** | `ink` fill with white text and a check; vote pick uses `red` fill with a "VOTED OUT" label |
 | **Text input** | 50 px, 2 px `ink` border, `paperRaised` fill; "add" input uses 2 px dashed `inkFaint` |
 | **Segmented control** | 2 px `ink` outer border, 2 px dividers, selected segment `ink` fill white text |
 | **Toggle** | 60 × 32 square, 2 px `ink` border; on = `ink` fill with a `paper` knob on the right |
@@ -80,12 +80,12 @@ Mockups show a black redaction bar wherever the word appears. In the app:
 | Trip setup | `02_trip_setup.html` | Numbered seat-order rows with a "Drives" checkbox column |
 | Round setup | `03_round_setup.html` | Car mode toggle row; driver picker as two big square buttons; difficulty segmented control |
 | Pass the phone | `04a_handout_pass.html` | Name at Anton 112 with a short red rule; 180 px black hold button |
-| Role revealed | `04b_handout_role.html` | Role card; "+3" scoring line; "Lift your finger to hide" |
+| Role revealed | `04b_handout_role.html` | Role card; "+3" scoring line; "The card closes by itself" with a 12 px countdown bar (4 s) in place of the Done button; Done appears on the pass screen after the card closes |
 | Round (Master) | `05_round_master.html` | Counter Anton 190; 168 px +1 button; Word guessed red, Not guessed outline |
 | Who guessed | `06_who_guessed.html` | Rule-separated list; selected row in ink |
 | Discussion | `07_discussion.html` | Timer Anton 132 with "OF 2:00"; numbered prompts in voice style |
-| Vote | `08_vote.html` | "Kunal, who is the" (voice) + "LEAK?" (Anton 56); red selected row |
-| Reveal (loud) | `09_reveal.html` | Red masthead, dateline, "EXCLUSIVE" tag, Anton 104 headline, voice deck, halftone photo box with caption, "How the car voted" column, black primary "CONTINUED IN ROUND 14 ▸" |
+| Vote | `08_vote.html` | One group vote: header "ROUND 13 · GROUP VOTE"; "Agree on one name. Who is the" (voice) + "LEAK?" (Anton 56); red selected row tagged "VOTED OUT"; button "VOTE OUT <NAME>". No pass gates or step segments |
+| Reveal (loud) | `09_reveal.html` | Red masthead, dateline, "EXCLUSIVE" tag, Anton 104 headline, voice deck, halftone photo box with caption, "The car voted out" name (red when it was the Leak) and a points column, black primary "CONTINUED IN ROUND 14 ▸" |
 | Standings | `10_standings.html` | Underlined text tabs (active = 4 px red underline); sports-table layout; leader row in ink |
 | Trip Wrapped (loud) | `11_trip_wrapped.html` | Front-page card 342 × 608 on `desk`; "CASE CLOSED" Anton 62; champion block in ink; awards with dotted leaders; red Share image |
 

@@ -35,20 +35,14 @@ Headline writeHeadline(Round round, List<Vote> votes, {required Map<int, String>
   final String deck;
   switch (outcome) {
     case Outcome.caught:
-      final v = resolveVote(votes, round.insiderId);
       final just = n < 10 ? 'just ' : '';
-      deck = '$insider exposed as the leak in a ${v.insiderVotes}–${v.otherVotes} vote after the $group cracked the word in $just${questionsPhrase(n)}.';
+      deck = '$insider exposed as the leak and voted out after the $group cracked the word in $just${questionsPhrase(n)}.';
     case Outcome.notCaught:
-      final v = resolveVote(votes, round.insiderId);
-      if (v.topTargets.length == 1 && v.topTargets.first != round.insiderId) {
-        final suspect = names[v.topTargets.first] ?? 'someone else';
-        final top = v.tally[v.topTargets.first] ?? 0;
-        deck = '$insider walked free as the $group pinned it on $suspect in a $top–${v.totalVotes - top} vote, after cracking the word in ${questionsPhrase(n)}.';
-      } else if (v.topTargets.contains(round.insiderId)) {
-        deck = '$insider slipped through a split vote after the $group cracked the word in ${questionsPhrase(n)}.';
-      } else {
-        deck = '$insider walked free while the $group split its vote, after cracking the word in ${questionsPhrase(n)}.';
-      }
+      final out = groupVerdict(votes, masterId: round.masterId);
+      final suspect = out == null ? null : names[out];
+      deck = suspect == null
+          ? '$insider walked free after the $group cracked the word in ${questionsPhrase(n)}.'
+          : '$insider walked free as the $group voted out $suspect, after cracking the word in ${questionsPhrase(n)}.';
     case Outcome.notFound:
     case Outcome.abandoned:
       if (n >= questionLimit) {

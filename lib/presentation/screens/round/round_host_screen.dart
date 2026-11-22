@@ -150,7 +150,7 @@ class _RoundHostScreenState extends ConsumerState<RoundHostScreen> {
           onEnd: () => _guard(_c.endDiscussion),
           onThirtySeconds: () => ref.read(roundEventsProvider).discussionEnding(view),
         ),
-      RoundPhase.voting => VoteScreen(view: view, onLock: (id) => _guard(() => _c.lockVote(id))),
+      RoundPhase.voting => VoteScreen(view: view, onVoteOut: (id) => _guard(() => _c.voteOut(id))),
       RoundPhase.reveal => RevealScreen(
           view: view,
           onNextRound: () => _guard(_c.nextRound),
@@ -175,9 +175,9 @@ class _RoundHostScreenState extends ConsumerState<RoundHostScreen> {
       },
       child: KeyedSubtree(
         key: ValueKey('phase-${r.phase.name}'),
-        // Role, peek and vote screens can show secrets: block screenshots and previews.
+        // Role and peek screens can show secrets: block screenshots and previews.
         child: switch (r.phase) {
-          RoundPhase.handout || RoundPhase.questioning || RoundPhase.voting => SecureArea(child: screen),
+          RoundPhase.handout || RoundPhase.questioning => SecureArea(child: screen),
           _ => screen,
         },
       ),

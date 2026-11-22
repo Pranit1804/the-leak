@@ -10,6 +10,7 @@ import 'package:the_leak/domain/engine/round_machine.dart';
 import 'package:the_leak/domain/models/difficulty.dart';
 import 'package:the_leak/domain/models/outcome.dart';
 import 'package:the_leak/domain/models/round_phase.dart';
+import 'package:the_leak/domain/models/vote.dart';
 
 import '../support/harness.dart';
 
@@ -85,10 +86,8 @@ void main() {
 
     v = h.container.read(roundControllerProvider(id)).requireValue;
     final insider = v.round.insiderId;
-    for (final voter in v.voteOrder) {
-      final cands = voteCandidates(v.round, voter);
-      await c(id).lockVote(cands.contains(insider) ? insider : cands.first);
-    }
+    expect(voteCandidates(v.round), contains(insider));
+    await c(id).voteOut(insider);
     v = h.container.read(roundControllerProvider(id)).requireValue;
     expect(v.round.phase, RoundPhase.reveal);
     expect(v.round.outcome, Outcome.caught);
@@ -99,7 +98,7 @@ void main() {
 
     final stored = (await h.read(roundRepositoryProvider).records(v.trip.id)).single;
     expect(stored.round.outcome, Outcome.caught);
-    expect(stored.votes.length, 6);
+    expect(stored.votes, [Vote(voterId: v.round.masterId, targetId: insider)], reason: 'one group vote, entered by the Master');
     expect(stored.points, v.points);
 
     await c(id).nextRound();
@@ -127,7 +126,7 @@ void main() {
     sub.close();
   });
 
-  test('a locked vote cannot be changed and a voter cannot vote twice', () async {
+  test('voting someone else out: escaped, the Leak scores 3, and a second vote is ignored', () async {
     final id = await startRound(car: false);
     final sub = h.container.listen(roundControllerProvider(id), (_, _) {});
     final v0 = await view(id);
@@ -139,11 +138,13 @@ void main() {
     await c(id).pickGuesser(guessCandidates(v0.round).first);
     await c(id).endDiscussion();
     final v = h.container.read(roundControllerProvider(id)).requireValue;
-    final first = v.voteOrder.first;
-    await c(id).lockVote(voteCandidates(v.round, first).first);
-    final votes = await h.read(roundRepositoryProvider).votes(id);
-    expect(votes.where((x) => x.voterId == first).length, 1);
-    expect(h.container.read(roundControllerProvider(id)).requireValue.round.voteIndex, 1);
+    final wrong = voteCandidates(v.round).firstWhere((p) => p != v.round.insiderId);
+    await c(id).voteOut(wrong);
+    await c(id).voteOut(v.round.insiderId);
+    final after = h.container.read(roundControllerProvider(id)).requireValue;
+    expect(after.round.outcome, Outcome.notCaught);
+    expect(after.points[v.round.insiderId], 3);
+    expect(await h.read(roundRepositoryProvider).votes(id), [Vote(voterId: v.round.masterId, targetId: wrong)]);
     sub.close();
   });
 
@@ -184,8 +185,6 @@ void main() {
     await ctl.pickGuesser(guessCandidates(v1.round).last);
     await ctl.endDiscussion();
     final v2 = h1.container.read(roundControllerProvider(id)).requireValue;
-    await ctl.lockVote(voteCandidates(v2.round, v2.voteOrder[0]).first);
-    await ctl.lockVote(voteCandidates(v2.round, v2.voteOrder[1]).first);
     sub.close();
     // "Kill" the app.
     h1.container.dispose();
@@ -198,10 +197,9 @@ void main() {
     final sub2 = h2.container.listen(roundControllerProvider(id), (_, _) {});
     final resumed = await h2.container.read(roundControllerProvider(id).future);
     expect(resumed.round.phase, RoundPhase.voting);
-    expect(resumed.round.voteIndex, 2);
-    expect(resumed.currentVoter, v2.voteOrder[2]);
+    expect(voteCandidates(resumed.round), voteCandidates(v2.round));
     expect(resumed.round.questionsUsed, 4);
-    expect(resumed.votes.length, 2);
+    expect(resumed.round.guessedById, v2.round.guessedById);
     sub2.close();
     await h2.dispose();
   });

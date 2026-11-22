@@ -15,15 +15,9 @@ List<int> handoutOrder(List<int> participantIds, {required int masterId, int? dr
 
 List<int> handoutOrderOf(Round r) => handoutOrder(r.participantIds, masterId: r.masterId, driverId: r.activeDriverId);
 
-/// Vote order: every passenger in handout order (the Master votes in their own
-/// turn, last of the passengers), then the Car mode driver, who says the vote
-/// aloud while the Master enters it.
-List<int> voteOrderOf(Round r) => [...handoutOrderOf(r), ?r.activeDriverId];
-
-/// Who [voterId] may vote for: everyone except themselves, the Master and the
-/// Car mode driver, in seat order.
-List<int> voteCandidates(Round r, int voterId) =>
-    r.participantIds.where((id) => id != voterId && id != r.masterId && id != r.activeDriverId).toList();
+/// Who the group can vote out: everyone except the Master and the Car mode
+/// driver (neither can be the Leak), in seat order.
+List<int> voteCandidates(Round r) => r.participantIds.where((id) => id != r.masterId && id != r.activeDriverId).toList();
 
 /// Players who can be picked on Who guessed: everyone except the Master.
 List<int> guessCandidates(Round r) => r.participantIds.where((id) => id != r.masterId).toList();
@@ -88,13 +82,11 @@ abstract final class RoundMachine {
     return r.copyWith(phase: RoundPhase.voting, voteIndex: 0);
   }
 
-  /// A vote was locked: next voter, or `reveal` after the last one.
-  /// The caller fills in the outcome and scores for the reveal.
+  /// The group voted one player out: straight to the reveal.
+  /// The caller fills in the outcome and scores.
   static Round voteLocked(Round r) {
     _expect(r, RoundPhase.voting);
-    final count = voteOrderOf(r).length;
-    if (r.voteIndex + 1 < count) return r.copyWith(voteIndex: r.voteIndex + 1);
-    return r.copyWith(phase: RoundPhase.reveal, voteIndex: count);
+    return r.copyWith(phase: RoundPhase.reveal, voteIndex: 1);
   }
 
   /// Not guessed → straight to the reveal; discussion and vote are skipped.

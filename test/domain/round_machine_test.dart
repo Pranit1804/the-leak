@@ -15,22 +15,14 @@ void main() {
       expect(handoutOrderOf(car).indexOf(4), 1);
     });
 
-    test('vote order is the passengers then the driver (08: Kunal is 3 of 6)', () {
-      expect(voteOrderOf(car), [3, 4, 5, 6, 2, 1]);
-      expect(voteOrderOf(car).indexOf(5), 2);
-    });
-
-    test('candidates exclude self, Master and driver (08: Kunal sees Amit, Sneha, Neha)', () {
-      expect(voteCandidates(car, 5), [3, 4, 6]);
-      expect(voteCandidates(car, 1), [3, 4, 5, 6]);
-      expect(voteCandidates(car, 2), [3, 4, 5, 6]);
+    test('the group can vote out anyone but the Master and the driver', () {
+      expect(voteCandidates(car), [3, 4, 5, 6]);
     });
 
     test('Car mode off: nobody skipped and the stored driver is ignored', () {
       final r = makeRound(participants: [1, 2, 3, 4], master: 4, insider: 2, carMode: false, driver: 1);
       expect(handoutOrderOf(r), [1, 2, 3, 4]);
-      expect(voteOrderOf(r), [1, 2, 3, 4]);
-      expect(voteCandidates(r, 1), [2, 3]);
+      expect(voteCandidates(r), [1, 2, 3], reason: 'only the Master is excluded');
     });
 
     test('Who guessed lists everyone but the Master, driver included', () {
@@ -83,13 +75,8 @@ void main() {
           reason: 'the Master cannot be the guesser');
     });
 
-    test('voting walks every voter, then reveal', () {
-      var r = car.copyWith(phase: RoundPhase.voting);
-      for (var i = 0; i < 5; i++) {
-        r = RoundMachine.voteLocked(r);
-        expect(r.phase, RoundPhase.voting);
-      }
-      r = RoundMachine.voteLocked(r);
+    test('one group vote goes straight to the reveal', () {
+      final r = RoundMachine.voteLocked(car.copyWith(phase: RoundPhase.voting));
       expect(r.phase, RoundPhase.reveal);
     });
 

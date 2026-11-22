@@ -74,6 +74,51 @@ void main() {
     });
   }
 
+  group('with maxDuration (role handout)', () {
+    Widget timed(List<bool> hides) => MaterialApp(
+          home: Scaffold(
+            body: HoldToReveal(
+              maxDuration: const Duration(seconds: 4),
+              onHidden: hides.add,
+              builder: (context, revealed, hold) => Column(children: [
+                if (revealed) const Text('SECRET') else hold(const SizedBox(width: 200, height: 100, child: Text('HOLD'))),
+              ]),
+            ),
+          ),
+        );
+
+    testWidgets('closes by itself after the time even while held, and reports it completed', (tester) async {
+      final hides = <bool>[];
+      await tester.pumpWidget(timed(hides));
+      final g = await tester.startGesture(tester.getCenter(find.text('HOLD')));
+      await tester.pump(const Duration(milliseconds: 3900));
+      expect(find.text('SECRET'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 200));
+      expect(find.text('SECRET'), findsNothing);
+      expect(hides, [true]);
+      await g.up();
+      await tester.pump();
+      expect(hides, [true], reason: 'lifting afterwards does not count again');
+    });
+
+    testWidgets('the same finger cannot re-open it; a new press can', (tester) async {
+      final hides = <bool>[];
+      await tester.pumpWidget(timed(hides));
+      final g = await tester.startGesture(tester.getCenter(find.text('HOLD')));
+      await tester.pump(const Duration(seconds: 4));
+      await g.moveBy(const Offset(1, 1));
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text('SECRET'), findsNothing);
+      await g.up();
+      final g2 = await tester.startGesture(tester.getCenter(find.text('HOLD')));
+      await tester.pump();
+      expect(find.text('SECRET'), findsOneWidget);
+      await g2.up();
+      await tester.pump();
+      expect(hides, [true, false], reason: 'the second look was cut short');
+    });
+  });
+
   testWidgets('SecureArea turns FLAG_SECURE on while mounted, reference-counted', (tester) async {
     final calls = <bool>[];
     tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(const MethodChannel('theleak/secure'), (call) async {

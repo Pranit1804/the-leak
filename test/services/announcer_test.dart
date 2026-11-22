@@ -41,8 +41,7 @@ void main() {
       expect(AnnouncerLines.wordGuessed('Rohan', 60), 'Word guessed by Rohan! One minute to find the leak.');
       expect(AnnouncerLines.wordGuessed('Rohan', 0), 'Word guessed by Rohan!');
       expect(AnnouncerLines.discussionEnding, 'Thirty seconds.');
-      expect(AnnouncerLines.voteStarted(carMode: false), 'Time to vote.');
-      expect(AnnouncerLines.voteStarted(carMode: true), 'Time to vote. Driver, say your vote out loud.');
+      expect(AnnouncerLines.voteStarted, 'Time to vote. Agree on one name to vote out.');
       expect(AnnouncerLines.revealCaught('Amit', 'X'), 'The leak was Amit. Caught! The word was X.');
       expect(AnnouncerLines.revealNotCaught('Amit', 'X'), 'The leak was Amit, and nobody caught them. The word was X.');
       expect(AnnouncerLines.revealNotFound('Amit', 'X', outOfQuestions: true), 'Out of questions. The word was X, and the leak was Amit.');
@@ -143,9 +142,7 @@ void main() {
       await c.pickGuesser(guessCandidates(v.round).first);
       await c.endDiscussion();
       final v2 = h.container.read(roundControllerProvider(id)).requireValue;
-      for (final voter in v2.voteOrder) {
-        await c.lockVote(voteCandidates(v2.round, voter).first);
-      }
+      await c.voteOut(voteCandidates(v2.round).first);
       await idle();
 
       final master = v.name(v.round.masterId);
@@ -156,7 +153,7 @@ void main() {
       expect(tts.lines.where((l) => l == 'Five questions left.').length, 1);
       expect(tts.lines.where((l) => l == 'Last question.').length, 1);
       expect(tts.lines, contains(startsWith('Word guessed by ')));
-      expect(tts.lines, contains('Time to vote. Driver, say your vote out loud.'));
+      expect(tts.lines, contains('Time to vote. Agree on one name to vote out.'));
       final revealAt = tts.lines.indexWhere((l) => l.contains('The leak was'));
       expect(revealAt, tts.lines.length - 1);
       expect(tts.lines.last, contains(insider));

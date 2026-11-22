@@ -39,6 +39,20 @@ void main() {
     });
   });
 
+  group('groupVerdict', () {
+    test('the one group vote names who was voted out', () {
+      expect(groupVerdict(const [Vote(voterId: 2, targetId: 4)], masterId: 2), 4);
+      expect(resolveVote(const [Vote(voterId: 2, targetId: 4)], 4).caught, isTrue);
+      expect(resolveVote(const [Vote(voterId: 2, targetId: 5)], 4).caught, isFalse);
+    });
+
+    test('per-player votes from an older build: the clear top target, or nobody on a tie', () {
+      expect(groupVerdict(votes({1: 3, 2: 3, 4: 1}), masterId: 2), 3);
+      expect(groupVerdict(votes({1: 3, 2: 4}), masterId: 2), isNull);
+      expect(groupVerdict(const [], masterId: 2), isNull);
+    });
+  });
+
   group('scoreRound (PRD 2.3)', () {
     // 6 players, Car mode on, driver 1, Master 2, Insider 4.
     final found = makeRound(

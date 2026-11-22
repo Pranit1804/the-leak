@@ -5,6 +5,7 @@ import 'package:the_leak/app/app.dart';
 import 'package:the_leak/app/router.dart';
 import 'package:the_leak/application/providers.dart';
 import 'package:the_leak/domain/models/round_phase.dart';
+import 'package:the_leak/presentation/screens/round/handout_screen.dart';
 import 'package:the_leak/presentation/widgets/square_field.dart';
 import 'package:the_leak/presentation/widgets/square_toggle.dart';
 
@@ -63,9 +64,11 @@ void main() {
         final g = await tester.startGesture(tester.getCenter(find.textContaining('HOLD TO SEE')));
         await tester.pump();
         expect(find.text('TOP SECRET · FOR YOUR EYES ONLY'), findsOneWidget);
+        // Every card stays open for the same 4 seconds, then closes by itself.
+        await tester.pump(handoutRevealDuration);
+        expect(find.text('TOP SECRET · FOR YOUR EYES ONLY'), findsNothing);
         await g.up();
         await tester.pump();
-        expect(find.text('TOP SECRET · FOR YOUR EYES ONLY'), findsNothing);
         await tap(find.textContaining('DONE ·'));
         expect(++steps, lessThanOrEqualTo(6));
       }
@@ -86,16 +89,12 @@ void main() {
         await tap(keyed('guesser-'));
         await tap(find.textContaining('CRACKED IT'));
         await tap(find.text('SKIP TO THE VOTE'));
-        var votes = 0;
-        while (find.text('SECRET VOTE').evaluate().isNotEmpty) {
-          if (find.textContaining('TAP TO VOTE').evaluate().isNotEmpty) await tap(find.textContaining('TAP TO VOTE'));
-          // Vote for a different candidate each round.
-          final cands = keyed('candidate-');
-          await tap(cands.at(round % cands.evaluate().length));
-          await tap(find.text('LOCK VOTE'));
-          expect(++votes, lessThanOrEqualTo(6));
-        }
-        expect(votes, round.isOdd ? 6 : 6, reason: 'passengers plus the driver, or all six');
+        // One group vote: a different name each round.
+        expect(find.text('GROUP VOTE'), findsOneWidget);
+        final cands = keyed('candidate-');
+        expect(cands.evaluate().length, round.isOdd ? 4 : 5, reason: 'everyone but the Master (and the driver in Car mode)');
+        await tap(cands.at(round % cands.evaluate().length));
+        await tap(find.textContaining('VOTE OUT '));
       }
       expect(find.text('EXCLUSIVE'), findsOneWidget);
       if (round < 10) await tap(find.textContaining('CONTINUED IN ROUND ${round + 1}'));

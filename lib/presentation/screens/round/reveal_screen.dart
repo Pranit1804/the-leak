@@ -4,6 +4,7 @@ import '../../../app/tokens.dart';
 import '../../../application/round_controller.dart';
 import '../../../domain/engine/caption_picker.dart';
 import '../../../domain/engine/headline_writer.dart';
+import '../../../domain/engine/vote_resolver.dart';
 import '../../../domain/models/outcome.dart';
 import '../../format.dart';
 import '../../widgets/halftone.dart';
@@ -136,7 +137,8 @@ class _Masthead extends StatelessWidget {
   }
 }
 
-/// "How the car voted": Commons in seat order, then the Master, then the Leak in red.
+/// Who the group voted out (red when it was the Leak), then everyone's points:
+/// Commons in seat order, then the Master, then the Leak in red.
 class _VoteColumn extends StatelessWidget {
   const _VoteColumn({required this.view});
 
@@ -145,24 +147,35 @@ class _VoteColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = view.round;
-    final target = {for (final v in view.votes) v.voterId: v.targetId};
     final commons = r.participantIds.where((id) => id != r.masterId && id != r.insiderId);
     final rows = [...commons, r.masterId, r.insiderId];
     final group = r.carMode ? 'car' : 'group';
-    final label = r.outcome == Outcome.notFound ? 'NO VOTE: WORD NOT FOUND' : 'HOW THE $group VOTED'.toUpperCase();
+    final out = r.outcome == Outcome.notFound ? null : groupVerdict(view.votes, masterId: r.masterId);
+    Widget heading(String text) => Container(
+          padding: const EdgeInsets.only(bottom: 3),
+          decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.ink, width: 2))),
+          child: Text(text, style: AppText.ui(10, weight: 800, letterSpacingEm: 0.14)),
+        );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          padding: const EdgeInsets.only(bottom: 3),
-          decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.ink, width: 2))),
-          child: Text(label, style: AppText.ui(10, weight: 800, letterSpacingEm: 0.14)),
-        ),
+        heading(r.outcome == Outcome.notFound ? 'NO VOTE: WORD NOT FOUND' : 'THE ${group.toUpperCase()} VOTED OUT'),
+        if (out != null) ...[
+          const SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(view.name(out).toUpperCase(),
+                style: AppText.display(24, height: 1.1, color: out == r.insiderId ? AppColors.red : AppColors.ink)),
+          ),
+        ],
+        const SizedBox(height: 10),
+        heading('POINTS'),
         const SizedBox(height: 4),
         for (var i = 0; i < rows.length; i++) ...[
           _VoteRow(
-            left: '${view.name(rows[i])}${rows[i] == r.masterId ? ' (M)' : ''}${target[rows[i]] == null ? '' : ' → ${view.name(target[rows[i]])}'}',
+            left: '${view.name(rows[i])}${rows[i] == r.masterId ? ' (M)' : ''}',
             points: view.points[rows[i]] ?? 0,
             red: rows[i] == r.insiderId,
           ),

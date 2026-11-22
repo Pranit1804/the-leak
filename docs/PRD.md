@@ -37,12 +37,12 @@ Role rules:
 
 ### 2.2 Round flow
 1. **Setup:** turn Car mode on or off (when on, pick who is driving now) and choose difficulty.
-2. **Role handout:** the phone goes to each eligible player in seat order. Each holds to see their role (and the word, if Master or Insider) and lifts their finger to hide it. In Car mode the driver is skipped. The Master goes last, so the phone ends with the Master.
+2. **Role handout:** the phone goes to each eligible player in seat order. Each holds to see their role (and the word, if Master or Insider). The card shows for exactly 4 seconds for every player and then closes by itself, so reading a word takes no longer than reading a Common card; lifting the finger earlier hides it at once. In Car mode the driver is skipped. The Master goes last, so the phone ends with the Master.
 3. **Round starts:** the app announces it aloud.
 4. **Questions:** players ask yes/no questions in any order. The Master answers aloud and taps **+1** for every question. A guess ("Is it a ___?") counts as a question. Undo is available.
 5. **Round ends:** the Master taps **Word guessed** (then picks who said it) or **Not guessed** (20 used up, or the group gives up).
 6. **Discussion:** 2 minutes to argue about who the Insider is. Skippable.
-7. **Vote:** each passenger votes privately on the phone. In Car mode the driver says his vote aloud and the Master enters it. Nobody can vote for themselves; the Master (and, in Car mode, the driver) are not candidates.
+7. **Vote:** the group (driver included) agrees on one name out loud and the Master taps it. There is one vote per round and no "no one" option. The Master (and, in Car mode, the driver) are not candidates.
 8. **Reveal:** the app announces whether the Insider was caught, shows the word and adds points.
 
 If the word is not guessed, steps 6 and 7 are skipped and the app goes straight to the reveal.
@@ -54,7 +54,7 @@ If the word is not guessed, steps 6 and 7 are skipped and the app goes straight 
 | Word found, Insider not caught | 0 | +3 | 0 |
 | Word not found | 0 | 0 | 0 |
 
-- **Caught** means the Insider got strictly the most votes. A tie counts as not caught.
+- **Caught** means the group voted out the Insider.
 - In Car mode the driver scores as a Common like anyone else.
 
 ### 2.4 Settings (defaults)
@@ -77,7 +77,7 @@ Visual reference for every screen: `design/screens/`. Design rules: `docs/DESIGN
 | 5 | Round (Master) | `05_round_master.html` | Master |
 | 6 | Who guessed | `06_who_guessed.html` | Master |
 | 7 | Discussion | `07_discussion.html` | Master |
-| 8 | Vote | `08_vote.html` | Each passenger in turn |
+| 8 | Vote | `08_vote.html` | Master (the group decides) |
 | 9 | Reveal | `09_reveal.html` | Master |
 | 10 | Standings | `10_standings.html` | Anyone |
 | 11 | Trip Wrapped | `11_trip_wrapped.html` | Anyone |
@@ -99,7 +99,8 @@ Visual reference for every screen: `design/screens/`. Design rules: `docs/DESIGN
    - Validation: Car mode needs at least 3 non-driving players.
 4. **Role handout**
    - Pass screen: "Pass the phone to <NAME>", progress segments, big **Hold to see** button.
-   - While held: role card ("TOP SECRET" notice) with role name, one-line job, and the word for Master or Insider. Lifting the finger hides it instantly.
+   - While held: role card ("TOP SECRET" notice) with role name, one-line job, and the word for Master or Insider, plus a bar counting down 4 seconds. The card closes by itself after 4 seconds for everyone; lifting the finger earlier hides it instantly.
+   - **Done · pass to <next>** appears only after the card has closed by itself; "Hold to see again" gives the same 4 seconds.
    - **Done · pass to <next>** moves on. Back gesture disabled.
 5. **Round (Master)**
    - Header: round number, "Master: <name>", hold-to-peek-word icon, mute icon.
@@ -111,21 +112,20 @@ Visual reference for every screen: `design/screens/`. Design rules: `docs/DESIGN
 6. **Who guessed:** player list without the Master (driver included, tagged DRIVER); pick one, confirm.
 7. **Discussion:** big countdown with progress bar, two discussion prompts, **Skip to the vote**. Auto-advances at zero. Skipped if the timer is off.
 8. **Vote**
-   - Per passenger in seat order: pass gate, then the candidate list (everyone except themselves, the Master and the Car mode driver), **Lock vote**.
-   - The Master votes in their own turn. Car mode: last step "Driver, say your vote", the Master taps the name.
-   - A locked vote cannot be changed.
+   - One screen: "Agree on one name. Who is the LEAK?", the candidate list (everyone except the Master and the Car mode driver), and **Vote out <name>**.
+   - The group talks it over (the driver says theirs aloud) and the Master taps the agreed name. The vote cannot be changed.
 9. **Reveal** (the one "loud" screen — tabloid front page)
    - Masthead, dateline (trip, round, date), huge **CAUGHT!** or **ESCAPED!** or **NOT FOUND** headline.
-   - One-sentence story deck, e.g. "<Insider> exposed as the leak in a 4–2 vote after the car cracked the word in just seven questions."
+   - One-sentence story deck, e.g. "<Insider> exposed as the leak and voted out after the car cracked the word in just seven questions."
    - Halftone "photo" placeholder with a caption from a bundled pool of fun captions (see 3.1).
-   - "How the car voted" list with points per player; "The word" with the actual word.
+   - "The car voted out" with the name (red when it was the Leak), points per player, and "The word" with the actual word.
    - **Continued in round <n+1>**, Standings, End trip.
 10. **Standings:** tabs Points / Stats / History. Points = newspaper-style table (POS, PLAYER, RND, PTS). Stats = every stat in section 5. History = one row per round (round, Insider, result).
 11. **Trip Wrapped:** a shareable "CASE CLOSED" special-edition front page: trip name and dates, rounds, champion, all awards. **Share image** and **Save**.
 
 ### 3.1 Reveal headlines and captions
 - Headline by outcome: caught → "CAUGHT!", not caught → "ESCAPED!", not found → "NOT FOUND".
-- The deck sentence is templated from round data (names, vote split, questions used). Write numbers under ten as words.
+- The deck sentence is templated from round data (names, who was voted out, questions used). Write numbers under ten as words.
 - Caption pool: about 30 short, light-hearted captions per outcome in `assets/copy/captions_v1.json`, picked at random without repeating within a trip. Captions must never mention or hint at the word.
 
 ## 4. Spoken announcements
@@ -137,7 +137,7 @@ Spoken through the phone's audio, which plays through the car speakers on Blueto
 | 10 / 5 / 1 questions left | "Ten questions left." / "Five questions left." / "Last question." |
 | Word guessed | "Word guessed by Rohan! Two minutes to find the leak." |
 | Discussion, 30 s left | "Thirty seconds." |
-| Vote starts | "Time to vote." In Car mode: "Time to vote. Driver, say your vote out loud." |
+| Vote starts | "Time to vote. Agree on one name to vote out." |
 | Reveal, caught | "The leak was Amit. Caught! The word was [word]." |
 | Reveal, not caught | "The leak was Amit, and nobody caught him. The word was [word]." |
 | Reveal, word not found | "Out of questions. The word was [word], and the leak was Amit." |
@@ -154,11 +154,10 @@ All stats are computed from saved rounds of the current trip.
 |---|---|---|---|
 | Points | Sum of round points | Champion / MVP | none |
 | Insider survival rate | Rounds as Insider where the word was found and not caught ÷ rounds as Insider | The Snake | 2 rounds as Insider |
-| Detective accuracy | Votes for the actual Insider ÷ votes cast (rounds where you were not the Insider) | Sherlock | 3 votes |
 | Word cracker | Rounds where you said the word | Word Cracker | 1 |
 | Fastest crack | Fewest questions used in a round you cracked | Speed Demon | 1 crack |
 | Master success rate | Rounds as Master where the word was found ÷ rounds as Master | Best Host | 2 rounds as Master |
-| Most falsely accused | Votes received in rounds where you were not the Insider | Always Suspected | 1 vote |
+| Wrongly voted out | Rounds where the group voted you out and you were not the Insider | Always Suspected | 1 round |
 
 - Rates show as a percentage with the count, e.g. "67% (2 of 3)".
 - Ties for an award: higher points wins; still tied, both get it.

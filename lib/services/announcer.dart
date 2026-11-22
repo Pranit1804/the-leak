@@ -127,7 +127,7 @@ class Announcer {
   Future<void> questionsLeft(int n) => say(AnnouncerLines.questionsLeft(n));
   Future<void> wordGuessed(String name, int discussionSeconds) => say(AnnouncerLines.wordGuessed(name, discussionSeconds));
   Future<void> discussionEnding() => say(AnnouncerLines.discussionEnding);
-  Future<void> voteStarted({required bool carMode}) => say(AnnouncerLines.voteStarted(carMode: carMode));
+  Future<void> voteStarted() => say(AnnouncerLines.voteStarted);
   Future<void> dailyStandings(String line) => say(line);
 
   Future<void> reveal(Outcome outcome, {required String insider, required String word, required bool outOfQuestions}) => say(switch (outcome) {
@@ -199,7 +199,7 @@ class AnnouncerEvents extends RoundEvents {
   void discussionEnding(RoundView v) => unawaited(_a.discussionEnding());
 
   @override
-  Future<void> voteStarted(RoundView v) => _a.voteStarted(carMode: v.round.carMode);
+  Future<void> voteStarted(RoundView v) => _a.voteStarted();
 
   @override
   Future<void> revealed(RoundView v) => _a.reveal(

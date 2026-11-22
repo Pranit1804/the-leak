@@ -23,19 +23,15 @@ class PlayerStats {
   int roundsPlayed = 0;
   int insiderRounds = 0;
   int insiderEscapes = 0;
-  int votesCast = 0;
-  int correctVotes = 0;
   int cracks = 0;
   int? fastestCrack;
   int masterRounds = 0;
   int masterFound = 0;
-  int falseVotes = 0;
+  /// Rounds where the group voted this player out when they were not the Leak.
+  int wronglyVotedOut = 0;
 
   /// Insider survival rate: escapes ÷ rounds as Insider.
   Rate get survival => Rate(insiderEscapes, insiderRounds);
-
-  /// Detective accuracy: votes for the actual Insider ÷ votes cast (not as Insider).
-  Rate get detective => Rate(correctVotes, votesCast);
 
   /// Master success rate: rounds as Master where the word was found ÷ rounds as Master.
   Rate get masterSuccess => Rate(masterFound, masterRounds);
@@ -44,7 +40,6 @@ class PlayerStats {
 enum AwardType {
   champion('Champion'),
   snake('The Snake'),
-  sherlock('Sherlock'),
   wordCracker('Word Cracker'),
   speedDemon('Speed Demon'),
   bestHost('Best Host'),

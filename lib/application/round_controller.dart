@@ -40,13 +40,11 @@ class RoundView {
   final Map<int, int> points;
 
   List<int> get handoutOrder => handoutOrderOf(round);
-  List<int> get voteOrder => voteOrderOf(round);
   int get questionLimit => trip.questionLimit;
   String name(int? id) => players[id]?.name ?? '';
 
   /// The player holding the phone in handout or voting.
   int? get currentHandoutPlayer => round.handoutIndex < handoutOrder.length ? handoutOrder[round.handoutIndex] : null;
-  int? get currentVoter => round.voteIndex < voteOrder.length ? voteOrder[round.voteIndex] : null;
 
   RoundView copyWith({Round? round, List<Vote>? votes, Caption? caption, Map<int, int>? points}) => RoundView(
         round: round ?? this.round,
@@ -153,20 +151,13 @@ class RoundController extends AsyncNotifier<RoundView> {
         unawaited(_events.voteStarted(_view));
       });
 
-  /// Locks the current voter's vote. After the last vote the round moves to the reveal.
-  Future<void> lockVote(int targetId) => _run((v) async {
-        final voter = v.currentVoter;
-        if (voter == null || v.round.phase != RoundPhase.voting) return;
-        if (v.votes.any((x) => x.voterId == voter)) return;
-        if (!voteCandidates(v.round, voter).contains(targetId)) throw ArgumentError('Not a candidate');
-        final vote = Vote(voterId: voter, targetId: targetId);
-        final next = RoundMachine.voteLocked(v.round);
-        final votes = [...v.votes, vote];
-        if (next.phase == RoundPhase.reveal) {
-          await _reveal(next, votes, lastVote: vote);
-        } else {
-          await _commit(next, write: () => ref.read(roundRepositoryProvider).lockVote(next, vote), votes: votes);
-        }
+  /// The group agreed on one name and the Master tapped it: save it as the
+  /// round's single vote (voter = the Master) and go straight to the reveal.
+  Future<void> voteOut(int targetId) => _run((v) async {
+        if (v.round.phase != RoundPhase.voting) return;
+        if (!voteCandidates(v.round).contains(targetId)) throw ArgumentError('Not a candidate');
+        final vote = Vote(voterId: v.round.masterId, targetId: targetId);
+        await _reveal(RoundMachine.voteLocked(v.round), [vote], lastVote: vote);
       });
 
   Future<void> notGuessed() => _run((v) async => _reveal(RoundMachine.notGuessed(v.round), v.votes));

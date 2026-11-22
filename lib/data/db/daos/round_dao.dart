@@ -44,6 +44,8 @@ class RoundDao extends DatabaseAccessor<AppDatabase> with _$RoundDaoMixin {
 
   Future<void> insertVote(VotesCompanion v) => into(votes).insert(v);
 
+  Future<void> deleteVotes(int roundId) => (delete(votes)..where((v) => v.roundId.equals(roundId))).go();
+
   Future<List<VoteRow>> votesOf(int roundId) =>
       (select(votes)..where((v) => v.roundId.equals(roundId))..orderBy([(v) => OrderingTerm.asc(v.id)])).get();
 

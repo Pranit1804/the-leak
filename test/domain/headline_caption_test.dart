@@ -12,34 +12,36 @@ import 'helpers.dart';
 
 void main() {
   const names = {1: 'Rohan', 2: 'Priya', 3: 'Amit', 4: 'Sneha', 5: 'Kunal', 6: 'Neha'};
-  List<Vote> v(Map<int, int> m) => [for (final e in m.entries) Vote(voterId: e.key, targetId: e.value)];
+  // The group vote: one vote, entered by the Master.
+  List<Vote> out(int master, int target) => [Vote(voterId: master, targetId: target)];
 
   group('writeHeadline', () {
-    test('caught matches the 09 mockup sentence', () {
+    test('caught: the group voted out the Leak', () {
       final r = makeRound(participants: [1, 2, 3, 4, 5, 6], master: 2, insider: 4, carMode: true, driver: 1, guessedBy: 3, questions: 7);
-      final h = writeHeadline(r, v({1: 4, 3: 4, 5: 4, 6: 3, 2: 4, 4: 6}), names: names, questionLimit: 20);
+      final h = writeHeadline(r, out(2, 4), names: names, questionLimit: 20);
       expect(h.title, 'CAUGHT!');
-      expect(h.deck, 'Sneha exposed as the leak in a 4–2 vote after the car cracked the word in just seven questions.');
+      expect(h.deck, 'Sneha exposed as the leak and voted out after the car cracked the word in just seven questions.');
     });
 
     test('says "group" when Car mode is off and writes numbers of ten and up as digits', () {
       final r = makeRound(participants: [1, 2, 3, 4], master: 1, insider: 2, guessedBy: 3, questions: 12);
-      final h = writeHeadline(r, v({2: 3, 3: 2, 4: 2, 1: 2}), names: names, questionLimit: 20);
-      expect(h.deck, 'Priya exposed as the leak in a 3–1 vote after the group cracked the word in 12 questions.');
+      final h = writeHeadline(r, out(1, 2), names: names, questionLimit: 20);
+      expect(h.deck, 'Priya exposed as the leak and voted out after the group cracked the word in 12 questions.');
     });
 
-    test('escaped: someone else took the blame', () {
+    test('escaped: the group voted out someone else', () {
       final r = makeRound(participants: [1, 2, 3, 4], master: 1, insider: 2, guessedBy: 3, questions: 1);
-      final h = writeHeadline(r, v({2: 3, 3: 4, 4: 3, 1: 3}), names: names, questionLimit: 20);
+      final h = writeHeadline(r, out(1, 3), names: names, questionLimit: 20);
       expect(h.title, 'ESCAPED!');
-      expect(h.deck, 'Priya walked free as the group pinned it on Amit in a 3–1 vote, after cracking the word in one question.');
+      expect(h.deck, 'Priya walked free as the group voted out Amit, after cracking the word in one question.');
     });
 
-    test('escaped: split vote including the Insider', () {
+    test('escaped: a tied vote saved by an older build names nobody', () {
       final r = makeRound(participants: [1, 2, 3, 4], master: 1, insider: 2, guessedBy: 3, questions: 9);
-      final h = writeHeadline(r, v({2: 3, 3: 2, 4: 3, 1: 2}), names: names, questionLimit: 20);
+      final tied = [const Vote(voterId: 2, targetId: 3), const Vote(voterId: 3, targetId: 2), const Vote(voterId: 4, targetId: 3), const Vote(voterId: 1, targetId: 2)];
+      final h = writeHeadline(r, tied, names: names, questionLimit: 20);
       expect(h.title, 'ESCAPED!');
-      expect(h.deck, 'Priya slipped through a split vote after the group cracked the word in nine questions.');
+      expect(h.deck, 'Priya walked free after the group cracked the word in nine questions.');
     });
 
     test('not found: out of questions, or gave up', () {

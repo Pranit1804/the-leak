@@ -9,11 +9,10 @@ String awardDetail(Award a, TripStats s) {
   return switch (a.type) {
     AwardType.champion => '${p.points} pts',
     AwardType.snake => '${p.insiderEscapes} of ${p.insiderRounds} escapes',
-    AwardType.sherlock => '${p.correctVotes} of ${p.votesCast} right',
     AwardType.wordCracker => p.cracks == 1 ? '1 crack' : '${p.cracks} cracks',
     AwardType.speedDemon => 'cracked in ${p.fastestCrack}',
     AwardType.bestHost => '${p.masterFound} of ${p.masterRounds} found',
-    AwardType.alwaysSuspected => p.falseVotes == 1 ? '1 vote' : '${p.falseVotes} votes',
+    AwardType.alwaysSuspected => p.wronglyVotedOut == 1 ? 'voted out once' : 'voted out ${p.wronglyVotedOut} times',
   };
 }
 
@@ -32,11 +31,10 @@ String _rate(Rate r) => r.total == 0 ? '—' : r.display;
 final statLines = <StatLine>[
   StatLine('Points', AwardType.champion, (p) => '${p.points}'),
   StatLine('Insider survival rate', AwardType.snake, (p) => _rate(p.survival)),
-  StatLine('Detective accuracy', AwardType.sherlock, (p) => _rate(p.detective)),
   StatLine('Word cracker', AwardType.wordCracker, (p) => '${p.cracks}'),
   StatLine('Fastest crack', AwardType.speedDemon, (p) => p.fastestCrack == null ? '—' : '${p.fastestCrack} questions'),
   StatLine('Master success rate', AwardType.bestHost, (p) => _rate(p.masterSuccess)),
-  StatLine('Most falsely accused', AwardType.alwaysSuspected, (p) => '${p.falseVotes}'),
+  StatLine('Wrongly voted out', AwardType.alwaysSuspected, (p) => '${p.wronglyVotedOut}'),
 ];
 
 /// "48 rounds, 6 suspects, 31 leaks plugged. Rohan takes the crown."

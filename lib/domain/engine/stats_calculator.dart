@@ -2,6 +2,7 @@ import '../models/outcome.dart';
 import '../models/player.dart';
 import '../models/round.dart';
 import '../models/stats.dart';
+import 'vote_resolver.dart';
 
 /// Every trip stat from PRD section 5, computed on demand from saved rounds.
 /// Abandoned and unfinished rounds are ignored.
@@ -38,15 +39,9 @@ TripStats computeStats(List<Player> players, List<RoundRecord> records) {
         if (f == null || r.questionsUsed < f) cracker.fastestCrack = r.questionsUsed;
       }
     }
-    for (final v in rec.votes) {
-      final voter = byId[v.voterId];
-      if (voter != null && v.voterId != r.insiderId) {
-        voter.votesCast++;
-        if (v.targetId == r.insiderId) voter.correctVotes++;
-      }
-      final target = byId[v.targetId];
-      if (target != null && v.targetId != r.insiderId) target.falseVotes++;
-    }
+    // Always Suspected: rounds where the group voted you out and you were not the Leak.
+    final out = groupVerdict(rec.votes, masterId: r.masterId);
+    if (out != null && out != r.insiderId) byId[out]?.wronglyVotedOut++;
   }
 
   final all = byId.values.toList();
@@ -58,11 +53,10 @@ TripStats computeStats(List<Player> players, List<RoundRecord> records) {
 
   add(AwardType.champion, (s) => s.points > 0, (a, b) => 0);
   add(AwardType.snake, (s) => s.insiderRounds >= 2 && s.insiderEscapes > 0, (a, b) => a.survival.compareTo(b.survival));
-  add(AwardType.sherlock, (s) => s.votesCast >= 3 && s.correctVotes > 0, (a, b) => a.detective.compareTo(b.detective));
   add(AwardType.wordCracker, (s) => s.cracks >= 1, (a, b) => a.cracks.compareTo(b.cracks));
   add(AwardType.speedDemon, (s) => s.fastestCrack != null, (a, b) => b.fastestCrack!.compareTo(a.fastestCrack!));
   add(AwardType.bestHost, (s) => s.masterRounds >= 2 && s.masterFound > 0, (a, b) => a.masterSuccess.compareTo(b.masterSuccess));
-  add(AwardType.alwaysSuspected, (s) => s.falseVotes >= 1, (a, b) => a.falseVotes.compareTo(b.falseVotes));
+  add(AwardType.alwaysSuspected, (s) => s.wronglyVotedOut >= 1, (a, b) => a.wronglyVotedOut.compareTo(b.wronglyVotedOut));
 
   final days = scored.map((r) => _day(r.round.startedAt)).toSet().length;
   return TripStats(

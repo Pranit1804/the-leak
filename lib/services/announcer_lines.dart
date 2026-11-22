@@ -35,8 +35,8 @@ abstract final class AnnouncerLines {
 
   static const discussionEnding = 'Thirty seconds.';
 
-  static String voteStarted({required bool carMode}) =>
-      carMode ? 'Time to vote. Driver, say your vote out loud.' : 'Time to vote.';
+  /// The group agrees on one name and the Master taps it.
+  static const voteStarted = 'Time to vote. Agree on one name to vote out.';
 
   static String revealCaught(String insider, String word) => 'The leak was $insider. Caught! The word was $word.';
 

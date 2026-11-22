@@ -100,16 +100,13 @@ class RoundRepository {
   /// Writes the round's mutable state (phase, indexes, counter, outcome…).
   Future<void> save(Round r) => _db.roundDao.updateRound(r.id, _companion(r));
 
-  /// Saves a locked vote and the advanced round together.
-  Future<void> lockVote(Round next, Vote vote) => _db.transaction(() async {
-        await _db.roundDao.insertVote(VotesCompanion.insert(roundId: next.id, voterId: vote.voterId, targetId: vote.targetId));
-        await save(next);
-      });
-
   /// Saves the reveal: outcome, points, caption and the round state together.
   Future<void> saveReveal(Round next, Map<int, int> points, {Vote? lastVote, Set<String> clearUsedCaptionIds = const {}}) =>
       _db.transaction(() async {
         if (lastVote != null) {
+          // The group vote is the only vote of a round; clear any left from an
+          // older build that took one vote per player.
+          await _db.roundDao.deleteVotes(next.id);
           await _db.roundDao.insertVote(VotesCompanion.insert(roundId: next.id, voterId: lastVote.voterId, targetId: lastVote.targetId));
         }
         for (final e in points.entries) {

@@ -21,7 +21,19 @@ class VoteResult {
   bool get topIsTie => topTargets.length > 1;
 }
 
-/// Caught means the Insider has strictly the most votes. A tie is not caught.
+/// The player the group voted out. The group agrees on one name and the
+/// Master enters it, so a round has a single vote with the Master as voter.
+/// Rounds saved before the group vote may hold one vote per player; for
+/// those, the clear top target counts as the group's pick (null on a tie).
+int? groupVerdict(List<Vote> votes, {required int masterId}) {
+  if (votes.length == 1) return votes.first.targetId;
+  final r = resolveVote(votes, -1);
+  return r.topTargets.length == 1 ? r.topTargets.first : null;
+}
+
+/// Caught means the Insider has strictly the most votes. With the group vote
+/// there is one vote, so caught means the group voted out the Insider.
+/// (A tie, possible only in rounds saved before the group vote, is not caught.)
 VoteResult resolveVote(List<Vote> votes, int insiderId) {
   final tally = <int, int>{};
   for (final v in votes) {

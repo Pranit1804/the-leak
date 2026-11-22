@@ -44,11 +44,10 @@ void main() {
   test('award details and the wrapped deck', () {
     String d(AwardType t) => awardDetail(stats.award(t)!, stats);
     expect(d(AwardType.snake), '2 of 3 escapes');
-    expect(d(AwardType.sherlock), '6 of 8 right');
     expect(d(AwardType.speedDemon), 'cracked in 4');
     expect(d(AwardType.wordCracker), '3 cracks');
     expect(d(AwardType.bestHost), '3 of 3 found');
-    expect(d(AwardType.alwaysSuspected), '10 votes');
+    expect(d(AwardType.alwaysSuspected), 'voted out 2 times');
     expect(wrappedDeck(stats), '11 rounds, 5 suspects, 5 leaks plugged. P2 takes the crown.');
   });
 

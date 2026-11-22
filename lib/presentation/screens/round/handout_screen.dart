@@ -22,8 +22,13 @@ class HandoutScreen extends StatefulWidget {
   State<HandoutScreen> createState() => _HandoutScreenState();
 }
 
+/// Every player's card shows for exactly this long, then closes by itself, so
+/// the Leak (and the Master) take no longer than a Common who has no word.
+const handoutRevealDuration = Duration(seconds: 4);
+
 class _HandoutScreenState extends State<HandoutScreen> {
   bool _seen = false;
+  bool _liftedEarly = false;
   int? _seenIndex;
 
   @override
@@ -34,6 +39,7 @@ class _HandoutScreenState extends State<HandoutScreen> {
     final playerId = order[index];
     if (_seenIndex != index) {
       _seen = false;
+      _liftedEarly = false;
       _seenIndex = index;
     }
     final name = v.name(playerId);
@@ -48,7 +54,14 @@ class _HandoutScreenState extends State<HandoutScreen> {
 
     return HoldToReveal(
       key: ValueKey('handout-$index'),
-      onHidden: () => setState(() => _seen = true),
+      maxDuration: handoutRevealDuration,
+      onHidden: (completed) => setState(() {
+        if (completed) {
+          _seen = true;
+        } else if (!_seen) {
+          _liftedEarly = true;
+        }
+      }),
       builder: (context, revealed, holdTarget) {
         final header = StepHeader(label: 'Role handout', index: index, total: order.length);
         final done = InkButton(label: doneLabel, onPressed: widget.onDone);
@@ -61,8 +74,8 @@ class _HandoutScreenState extends State<HandoutScreen> {
               _ScoringLine(copy: RoleCopy.of(role, carMode: v.round.carMode)),
             ],
             bottom: [
-              Center(child: Text('LIFT YOUR FINGER TO HIDE', style: AppText.label(color: AppColors.inkMuted))),
-              done,
+              Center(child: Text('THE CARD CLOSES BY ITSELF', style: AppText.label(color: AppColors.inkMuted))),
+              const _CountdownBar(duration: handoutRevealDuration),
             ],
           );
         }
@@ -72,6 +85,11 @@ class _HandoutScreenState extends State<HandoutScreen> {
             PassPhoneName(name: name, body: 'Only $name should see the screen. Everyone else, look away.'),
           ],
           bottom: [
+            if (_liftedEarly && !_seen)
+              Center(
+                child: Text('Keep holding until the card closes by itself.',
+                    style: AppText.ui(14, weight: 600)),
+              ),
             holdTarget(GateButton(label: _seen ? 'Hold to see again' : "I'm $name · hold to see")),
             if (_seen) done,
             if (driver != null) NoteLine(label: 'Driver', text: '${v.name(driver)} is skipped and plays as a Common.'),
@@ -80,6 +98,20 @@ class _HandoutScreenState extends State<HandoutScreen> {
       },
     );
   }
+}
+
+/// The 12 px progress bar, emptying over [duration] while the card is shown.
+class _CountdownBar extends StatelessWidget {
+  const _CountdownBar({required this.duration});
+
+  final Duration duration;
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+        tween: Tween(begin: 1, end: 0),
+        duration: duration,
+        builder: (context, value, _) => InkProgressBar(fraction: value),
+      );
 }
 
 class _ScoringLine extends StatelessWidget {

@@ -47,14 +47,7 @@ RoundView mockupView({RoundPhase phase = RoundPhase.handout, int handout = 0, in
     trip: Trip(id: 1, name: 'South Trip', createdAt: now, questionLimit: 20, discussionSeconds: 120, alertsOn: true, lastCarMode: true),
     players: players,
     word: const Word(id: 'food_001', word: dummyWord, category: 'food', difficulty: Difficulty.easy),
-    votes: const [
-      Vote(voterId: 3, targetId: 4),
-      Vote(voterId: 4, targetId: 6),
-      Vote(voterId: 5, targetId: 4),
-      Vote(voterId: 6, targetId: 3),
-      Vote(voterId: 2, targetId: 4),
-      Vote(voterId: 1, targetId: 4),
-    ],
+    votes: const [Vote(voterId: 2, targetId: 4)], // the group voted out Sneha
     caption: const Caption(id: 'c1', outcome: Outcome.caught, text: '{insider}, seconds after the reveal.'),
     points: const {1: 2, 2: 1, 3: 2, 4: 0, 5: 2, 6: 2},
   );
@@ -69,7 +62,7 @@ Future<void> pumpScreen(WidgetTester tester, Widget child) async {
 }
 
 void main() {
-  testWidgets('handout: the word shows only while held and hides the instant the finger lifts', (tester) async {
+  testWidgets('handout: the card shows for exactly 4 seconds, then closes by itself', (tester) async {
     final v = mockupView(handout: 1); // Sneha, the Leak, 2 of 5
     var done = 0;
     await pumpScreen(tester, HandoutScreen(view: v, onDone: () async => done++));
@@ -83,14 +76,35 @@ void main() {
     await tester.pump();
     expect(find.text('THE LEAK'), findsOneWidget);
     expect(find.text(dummyWord.toUpperCase()), findsOneWidget);
-    expect(find.text('DONE · PASS TO KUNAL'), findsOneWidget);
+    expect(find.text('THE CARD CLOSES BY ITSELF'), findsOneWidget);
+    expect(find.textContaining('DONE'), findsNothing, reason: 'no early Done: every turn takes the same time');
 
+    await tester.pump(handoutRevealDuration - const Duration(milliseconds: 100));
+    expect(find.text(dummyWord.toUpperCase()), findsOneWidget, reason: 'still open just before 4 s');
+    await tester.pump(const Duration(milliseconds: 150));
+    expect(find.text(dummyWord.toUpperCase()), findsNothing, reason: 'closed after 4 s although still held');
+    expect(find.text('THE LEAK'), findsNothing);
+
+    // Still holding: nothing re-opens until the finger lifts.
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text(dummyWord.toUpperCase()), findsNothing);
     await gesture.up();
     await tester.pump();
-    expect(find.text(dummyWord.toUpperCase()), findsNothing, reason: 'hidden on release');
-    expect(find.text('THE LEAK'), findsNothing);
+    expect(find.text('HOLD TO SEE AGAIN'), findsOneWidget);
     await tester.tap(find.text('DONE · PASS TO KUNAL'));
     expect(done, 1);
+  });
+
+  testWidgets('handout: lifting early hides at once, asks to keep holding, and gives no Done', (tester) async {
+    await pumpScreen(tester, HandoutScreen(view: mockupView(handout: 1), onDone: () async {}));
+    final g = await tester.startGesture(tester.getCenter(find.textContaining('HOLD TO SEE')));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text(dummyWord.toUpperCase()), findsOneWidget);
+    await g.up();
+    await tester.pump();
+    expect(find.text(dummyWord.toUpperCase()), findsNothing, reason: 'hidden the instant the finger lifts');
+    expect(find.text('Keep holding until the card closes by itself.'), findsOneWidget);
+    expect(find.textContaining('DONE'), findsNothing);
   });
 
   testWidgets('handout: a cancelled pointer and app pause also hide the card', (tester) async {
@@ -124,8 +138,10 @@ void main() {
     final g2 = await tester.startGesture(tester.getCenter(find.textContaining('HOLD TO SEE')));
     await tester.pump();
     expect(find.text('THE MASTER'), findsOneWidget);
-    expect(find.text('DONE · START ROUND'), findsOneWidget);
+    await tester.pump(handoutRevealDuration);
     await g2.up();
+    await tester.pump();
+    expect(find.text('DONE · START ROUND'), findsOneWidget);
   });
 
   testWidgets('round master: counter, peek while held, buttons', (tester) async {
@@ -178,32 +194,24 @@ void main() {
     await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('vote: gate, then candidates without self, Master and driver', (tester) async {
-    int? locked;
-    await pumpScreen(tester, VoteScreen(view: mockupView(phase: RoundPhase.voting, vote: 2), onLock: (id) => locked = id));
-    expect(find.text('3 OF 6'), findsOneWidget);
-    expect(find.text('KUNAL'), findsOneWidget);
-    await tester.tap(find.textContaining('TAP TO VOTE'));
-    await tester.pump();
-    expect(find.text('Kunal, who is the'), findsOneWidget);
-    for (final n in ['Amit', 'Sneha', 'Neha']) {
+  testWidgets('group vote: one list without the Master and driver, one name voted out', (tester) async {
+    int? out;
+    await pumpScreen(tester, VoteScreen(view: mockupView(phase: RoundPhase.voting), onVoteOut: (id) => out = id));
+    expect(find.text('GROUP VOTE'), findsOneWidget);
+    expect(find.text('Agree on one name. Who is the'), findsOneWidget);
+    for (final n in ['Amit', 'Sneha', 'Kunal', 'Neha']) {
       expect(find.text(n), findsOneWidget);
     }
-    for (final n in ['Kunal', 'Priya', 'Rohan']) {
+    for (final n in ['Priya', 'Rohan']) {
       expect(find.text(n), findsNothing);
     }
-    expect(find.text('Neha, Priya, then Rohan says the vote out loud.'), findsOneWidget);
+    expect(find.textContaining("Priya (Master) and Rohan (driver) aren't suspects"), findsOneWidget);
+    expect(find.text('PICK ONE NAME'), findsOneWidget);
     await tester.tap(find.text('Sneha'));
     await tester.pump();
-    expect(find.text('YOUR PICK'), findsOneWidget);
-    await tester.tap(find.text('LOCK VOTE'));
-    expect(locked, 4);
-  });
-
-  testWidgets('vote: the driver step has no gate', (tester) async {
-    await pumpScreen(tester, VoteScreen(view: mockupView(phase: RoundPhase.voting, vote: 5), onLock: (_) {}));
-    expect(find.text('Rohan, who is the'), findsOneWidget);
-    expect(find.textContaining('say your vote out loud'), findsOneWidget);
+    expect(find.text('VOTED OUT'), findsOneWidget);
+    await tester.tap(find.text('VOTE OUT SNEHA'));
+    expect(out, 4);
   });
 
   testWidgets('reveal: caught front page', (tester) async {
@@ -219,11 +227,12 @@ void main() {
     expect(find.text('CAUGHT!'), findsOneWidget);
     expect(find.text('SOUTH TRIP EDITION'), findsOneWidget);
     expect(find.text('FRI 20 NOV'), findsOneWidget);
-    expect(find.textContaining('exposed as the leak in a 4–2 vote'), findsOneWidget);
-    expect(find.text('Priya (M) → Sneha'), findsOneWidget);
-    expect(find.text('Sneha → Neha'), findsOneWidget);
+    expect(find.textContaining('exposed as the leak and voted out'), findsOneWidget);
+    expect(find.text('THE CAR VOTED OUT'), findsOneWidget);
+    expect(find.text('SNEHA'), findsOneWidget);
+    expect(find.text('POINTS'), findsOneWidget);
+    expect(find.text('Priya (M)'), findsOneWidget);
     expect(find.text('CONTINUED IN ROUND 14'), findsOneWidget);
-    expect(find.text('HOW THE CAR VOTED'), findsOneWidget);
   });
 
   testWidgets('reveal: not found and escaped render', (tester) async {
@@ -251,7 +260,7 @@ void main() {
           onUndo: () {},
           onWordGuessed: () {},
           onNotGuessed: () {}),
-      VoteScreen(view: mockupView(phase: RoundPhase.voting, vote: 2), onLock: (_) {}),
+      VoteScreen(view: mockupView(phase: RoundPhase.voting), onVoteOut: (_) {}),
       RevealScreen(view: mockupView(phase: RoundPhase.reveal, outcome: Outcome.caught, guessed: 3), onNextRound: () {}, onStandings: () {}, onEndTrip: () {}),
     ]) {
       await tester.pumpWidget(MaterialApp(theme: buildTheme(), home: w));
