@@ -11,6 +11,7 @@ import '../domain/models/outcome.dart';
 import '../domain/models/round_phase.dart';
 import 'providers.dart';
 import 'settings_controller.dart';
+import 'telemetry.dart';
 
 /// Randomness and time, overridable in tests.
 final rngProvider = Provider<Random>((ref) => Random());
@@ -33,12 +34,14 @@ class TripController {
     final trips = ref.read(tripRepositoryProvider);
     final open = await trips.openTrip();
     if (open != null) await endTrip(open.id);
-    return trips.createTrip(
+    final id = await trips.createTrip(
       name: name,
       players: players,
       settings: ref.read(settingsControllerProvider).game,
       now: ref.read(clockProvider)(),
     );
+    ref.read(telemetryProvider).tripStarted(players: players.length, drivers: players.where((p) => p.canDrive).length);
+    return id;
   }
 
   Future<void> updateTrip(int tripId, {required String name, required List<PlayerDraft> players}) =>
@@ -53,15 +56,26 @@ class TripController {
       if (open.phase == RoundPhase.reveal) {
         await rounds.save(RoundMachine.close(open, now));
       } else {
+        ref.read(telemetryProvider).roundAbandoned(phase: open.phase.name);
         await rounds.abandon(RoundMachine.abandon(open, now));
       }
     }
     await ref.read(tripRepositoryProvider).endTrip(tripId, now: now);
+    final scored = (await rounds.records(tripId)).where((r) => r.round.outcome?.scored ?? false).length;
+    ref.read(telemetryProvider).tripEnded(rounds: scored);
   }
 
   /// Assigns roles, picks a word and saves a new round in `handout`.
   /// Returns the new round id.
   Future<int> startRound({
+    required int tripId,
+    required bool carMode,
+    int? driverId,
+    required DifficultyChoice difficulty,
+  }) =>
+      ref.read(telemetryProvider).trace('start_round', () => _startRound(tripId: tripId, carMode: carMode, driverId: driverId, difficulty: difficulty));
+
+  Future<int> _startRound({
     required int tripId,
     required bool carMode,
     int? driverId,
@@ -99,6 +113,12 @@ class TripController {
     );
     await ref.read(settingsRepositoryProvider).setLastDifficulty(difficulty);
     ref.invalidate(usedWordIdsProvider(tripId));
+    ref.read(telemetryProvider).roundStarted(
+      number: round.number,
+      players: round.participantIds.length,
+      carMode: carMode,
+      difficulty: difficulty.name,
+    );
     return round.id;
   }
 }

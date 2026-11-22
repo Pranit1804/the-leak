@@ -7,7 +7,7 @@ The Leak is a single-phone, offline social deduction party game for 4 to 8 frien
 
 - **Positioning:** a party game for friends you can play anywhere; Car mode is the hook in the store listing and screenshots.
 - **Platform:** Flutter, Android first; iOS later from the same code.
-- **Network:** none. Everything works offline.
+- **Network:** not needed to play. Everything works offline; anonymous diagnostics (Firebase Analytics, Crashlytics, Performance) are sent when a connection is available. No names, trip names or words are ever sent.
 - **v1 goal:** playable build by 23 Dec 2026, on the Play internal testing track by 28 Dec 2026.
 - **Name:** The Leak (see 1.1).
 
@@ -212,6 +212,6 @@ Format:
 - [ ] Points and every stat match a hand count of the same rounds.
 - [ ] Killing the app mid-round and reopening resumes the round on the right screen and player.
 - [ ] Announcements play through car Bluetooth audio.
-- [ ] Works fully in airplane mode.
+- [ ] Plays fully in airplane mode (diagnostics wait for a connection).
 - [ ] Trip Wrapped shares to WhatsApp as an image.
 - [ ] Screens match `design/screens/` (layout, type, colours, square corners).

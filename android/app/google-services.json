@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "114615868676",
+    "project_id": "the-leak-app",
+    "storage_bucket": "the-leak-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:114615868676:android:78241c69a8f5c5307bc451",
+        "android_client_info": {
+          "package_name": "com.bytecode.theleak"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_mB3LoYnO8vZ7POwWHBVCAloBcy_Vr7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

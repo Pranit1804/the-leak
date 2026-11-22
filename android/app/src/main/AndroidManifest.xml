@@ -1,9 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-    <!-- Offline only: strip INTERNET even if a plugin asks for it. (The debug
-         and profile manifests still add it so `flutter run` can attach.) -->
-    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The game plays fully offline. The network is used only by Firebase
+         (Analytics, Crashlytics, Performance) to send anonymous diagnostics
+         when a connection is available. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Save the Trip Wrapped card to the gallery on Android 8–10 (gal). -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"

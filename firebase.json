@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"the-leak-app","appId":"1:114615868676:android:78241c69a8f5c5307bc451","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"the-leak-app","configurations":{"android":"1:114615868676:android:78241c69a8f5c5307bc451","ios":"1:114615868676:ios:22b6164d92734dbc7bc451"}}}}}}

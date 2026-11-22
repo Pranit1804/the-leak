@@ -13,6 +13,7 @@ import '../domain/models/trip.dart';
 import '../domain/models/vote.dart';
 import '../domain/models/word.dart';
 import 'providers.dart';
+import 'telemetry.dart';
 import 'trip_controller.dart';
 
 /// Everything a round screen needs.
@@ -69,6 +70,7 @@ class RoundController extends AsyncNotifier<RoundView> {
 
   /// Hooks for side effects (announcements, haptics); see [RoundEvents].
   RoundEvents get _events => ref.read(roundEventsProvider);
+  Telemetry get _telemetry => ref.read(telemetryProvider);
 
   @override
   Future<RoundView> build() => _load();
@@ -112,6 +114,7 @@ class RoundController extends AsyncNotifier<RoundView> {
   Future<void> _commit(Round next, {Future<void> Function()? write, List<Vote>? votes}) async {
     await (write ?? () => ref.read(roundRepositoryProvider).save(next))();
     state = AsyncData(_view.copyWith(round: next, votes: votes));
+    _telemetry.setRoundPhase(next.phase.name);
   }
 
   DateTime get _now => ref.read(clockProvider)();
@@ -173,6 +176,13 @@ class RoundController extends AsyncNotifier<RoundView> {
     );
     final revealed = next.copyWith(outcome: score.outcome, captionId: pick?.caption.id, endedAt: _now);
     await rounds.saveReveal(revealed, score.points, lastVote: lastVote, clearUsedCaptionIds: pick?.clearedIds ?? const {});
+    _telemetry.setRoundPhase(revealed.phase.name);
+    _telemetry.roundEnded(
+      outcome: score.outcome.db,
+      questionsUsed: revealed.questionsUsed,
+      questionLimit: _view.questionLimit,
+      carMode: revealed.carMode,
+    );
     state = AsyncData(_view.copyWith(round: revealed, votes: votes, caption: pick?.caption, points: score.points));
     unawaited(_events.revealed(_view));
   }
@@ -184,10 +194,13 @@ class RoundController extends AsyncNotifier<RoundView> {
   Future<void> endTrip() => _run((v) async {
         await _commit(RoundMachine.close(v.round, _now));
         await ref.read(tripRepositoryProvider).endTrip(v.trip.id, now: _now);
+        final records = await ref.read(roundRepositoryProvider).records(v.trip.id);
+        _telemetry.tripEnded(rounds: records.where((r) => r.round.outcome?.scored ?? false).length);
       });
 
   /// A confirmed back-out: outcome `abandoned`, nothing scored.
   Future<void> abandon() => _run((v) async {
+        _telemetry.roundAbandoned(phase: v.round.phase.name);
         final next = RoundMachine.abandon(v.round, _now);
         await _commit(next, write: () => ref.read(roundRepositoryProvider).abandon(next));
       });

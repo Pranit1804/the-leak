@@ -6,13 +6,17 @@ import 'app/app.dart';
 import 'app/router.dart';
 import 'application/providers.dart';
 import 'application/round_controller.dart';
+import 'application/telemetry.dart';
 import 'data/db/app_database.dart';
 import 'presentation/screens/licences_screen.dart';
 import 'services/announcer.dart';
+import 'services/firebase_telemetry.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   registerFontLicences();
+  // Anonymous diagnostics; the game plays fully offline without them.
+  final telemetry = await initFirebaseTelemetry();
   final db = AppDatabase();
   final prefs = await SharedPreferences.getInstance();
 
@@ -25,6 +29,7 @@ Future<void> main() async {
       databaseProvider.overrideWithValue(db),
       sharedPreferencesProvider.overrideWithValue(prefs),
       roundEventsProvider.overrideWith(AnnouncerEvents.new),
+      if (telemetry != null) telemetryProvider.overrideWithValue(telemetry),
     ],
     child: TheLeakApp(router: router),
   ));

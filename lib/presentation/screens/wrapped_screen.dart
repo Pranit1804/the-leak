@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../app/router.dart';
 import '../../app/tokens.dart';
 import '../../application/providers.dart';
+import '../../application/telemetry.dart';
 import '../../domain/models/round.dart';
 import '../../domain/models/stats.dart';
 import '../../domain/models/trip.dart';
@@ -35,6 +36,7 @@ class _WrappedScreenState extends ConsumerState<WrappedScreen> {
     setState(() => _busy = true);
     try {
       await shareCard(await capturePng(_cardKey), tripName: trip.name);
+      ref.read(telemetryProvider).wrappedExported(action: 'share');
     } catch (_) {
       _snack('Could not open sharing. Try Save instead.');
     } finally {
@@ -50,6 +52,7 @@ class _WrappedScreenState extends ConsumerState<WrappedScreen> {
       if (!ok) {
         _snack('Allow photo access to save the front page.');
       } else if (mounted) {
+        ref.read(telemetryProvider).wrappedExported(action: 'save');
         setState(() => _saved = true);
       }
     } catch (_) {
