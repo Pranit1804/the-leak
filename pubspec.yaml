@@ -1,7 +1,7 @@
 name: the_leak
 description: "The Leak: an offline single-phone social deduction party game with Car mode."
 publish_to: 'none'
-version: 0.1.0+2
+version: 0.1.0+3
 
 environment:
   sdk: ^3.12.2
